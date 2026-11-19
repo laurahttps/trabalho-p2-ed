@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador BFS vs. DFS — Labirinto</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>BFS vs. DFS no Labirinto</h1>
+    <p>Tema D — Grafos: Travessias · Estrutura de Dados · Fatec Ribeirão Preto</p>
+  </header>
+
+  <main>
+    <!-- ===== Controles ===== -->
+    <section class="painel controles">
+      <div class="grupo">
+        <span class="rotulo">Algoritmo</span>
+        <div class="botoes">
+          <button id="btn-bfs">BFS (Fila)</button>
+          <button id="btn-dfs">DFS (Pilha)</button>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <span class="rotulo">Cenários</span>
+        <div class="botoes">
+          <button data-cenario="comparativo">1. BFS vs. DFS</button>
+          <button data-cenario="semCaminho">2. Sem caminho</button>
+          <button data-cenario="piorCaso">3. Pior caso</button>
+          <button data-cenario="labirinto">Caso médio</button>
+          <button data-cenario="customizado">Customizado</button>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <span class="rotulo">Execução</span>
+        <div class="botoes">
+          <button id="btn-play">▶ Executar</button>
+          <button id="btn-step">⏭ Próximo passo</button>
+          <button id="btn-pause">⏸ Pausar</button>
+          <button id="btn-reset">↺ Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <span class="rotulo">Velocidade</span>
+        <input type="range" id="velocidade" min="100" max="1500" step="100" value="900">
+      </div>
+    </section>
+
+    <!-- ===== Labirinto + painel lateral ===== -->
+    <section class="area-principal">
+      <div class="painel">
+        <h2 id="titulo-cenario">Cenário</h2>
+        <p id="descricao-cenario" class="dica"></p>
+
+        <div class="editor">
+          <span class="rotulo">Editar (clique nas casas):</span>
+          <label><input type="radio" name="ferramenta" value="#" checked> Parede</label>
+          <label><input type="radio" name="ferramenta" value="S"> Origem (S)</label>
+          <label><input type="radio" name="ferramenta" value="E"> Destino (E)</label>
+        </div>
+
+        <div id="grade" class="grade"></div>
+
+        <div class="legenda">
+          <span><i class="cor-origem"></i>Origem</span>
+          <span><i class="cor-destino"></i>Destino</span>
+          <span><i class="cor-parede"></i>Parede</span>
+          <span><i class="cor-fronteira"></i>Na fila/pilha</span>
+          <span><i class="cor-novo"></i>Acabou de entrar</span>
+          <span><i class="cor-atual"></i>Nó atual</span>
+          <span><i class="cor-visitado"></i>Visitado</span>
+          <span><i class="cor-caminho"></i>Caminho final</span>
+        </div>
+        <p class="dica">Os números nas casas mostram a quantos passos ela está da origem pelo caminho encontrado. Atalho: a tecla → avança um passo.</p>
+      </div>
+
+      <div class="coluna-lateral">
+        <div class="painel">
+          <h2 id="titulo-estrutura">Fila (FIFO)</h2>
+          <p id="dica-estrutura" class="dica"></p>
+          <div id="estrutura" class="estrutura"></div>
+        </div>
+
+        <div class="painel">
+          <h2>Métricas</h2>
+          <div class="metricas">
+            <div class="metrica"><span>Passo</span><strong id="m-passo">—</strong></div>
+            <div class="metrica"><span>Nó atual</span><strong id="m-atual">—</strong></div>
+            <div class="metrica"><span id="m-tamanho-rotulo">Tamanho da fila</span><strong id="m-tamanho">0</strong></div>
+            <div class="metrica"><span>Nós visitados</span><strong id="m-visitados">0</strong></div>
+            <div class="metrica"><span>Arestas verificadas</span><strong id="m-arestas">0</strong></div>
+            <div class="metrica"><span>Grafo (V / E)</span><strong id="m-grafo">—</strong></div>
+            <div class="metrica larga"><span>Caminho encontrado</span><strong id="m-caminho">—</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Log + comparação ===== -->
+    <section class="area-inferior">
+      <div class="painel">
+        <h2>Log do passo a passo</h2>
+        <ol id="log" class="log"></ol>
+      </div>
+
+      <div class="painel">
+        <h2>Comparação BFS × DFS</h2>
+        <table>
+          <thead>
+            <tr><th></th><th>BFS (Fila)</th><th>DFS (Pilha)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Tamanho do caminho</td><td id="r-bfs-caminho">—</td><td id="r-dfs-caminho">—</td></tr>
+            <tr><td>Nós visitados</td><td id="r-bfs-visitados">—</td><td id="r-dfs-visitados">—</td></tr>
+            <tr><td>Arestas verificadas</td><td id="r-bfs-arestas">—</td><td id="r-dfs-arestas">—</td></tr>
+          </tbody>
+        </table>
+        <p class="dica">Execute os dois algoritmos até o fim no mesmo cenário para preencher a tabela.</p>
+
+        <div class="explicacao">
+          <h3>Por que a BFS garante o menor caminho?</h3>
+          <p>A fila faz a BFS visitar os nós em ordem de distância: primeiro todos a 1 passo, depois todos a 2 passos, e assim por diante (veja os números nas casas). Por isso, quando o destino sai da fila pela primeira vez, não existe caminho mais curto até ele.</p>
+          <p>A DFS usa uma pilha e sempre segue o último vizinho empilhado, mergulhando em um corredor sem olhar a distância. Ela encontra <b>um</b> caminho, mas não necessariamente o menor.</p>
+          <p><b>Complexidade (as duas):</b> tempo O(V + E), espaço O(V).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

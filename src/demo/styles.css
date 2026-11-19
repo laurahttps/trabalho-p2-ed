@@ -1,0 +1,283 @@
+/* ===== Cores e variáveis ===== */
+:root {
+  --fundo: #f4f6fb;
+  --painel: #ffffff;
+  --texto: #1f2937;
+  --suave: #6b7280;
+  --borda: #e5e7eb;
+  --primaria: #4f46e5;
+
+  --livre: #f9fafb;
+  --parede: #374151;
+  --origem: #16a34a;
+  --destino: #dc2626;
+  --fronteira: #fde68a;
+  --novo: #facc15;
+  --atual: #f97316;
+  --visitado: #bfdbfe;
+  --caminho: #a855f7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+/* ===== Cabeçalho ===== */
+header {
+  background: var(--primaria);
+  color: white;
+  padding: 16px 24px;
+}
+header h1 { margin: 0; font-size: 1.5rem; }
+header p { margin: 4px 0 0; opacity: 0.85; font-size: 0.9rem; }
+
+/* ===== Layout ===== */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.painel {
+  background: var(--painel);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.painel h2 { margin: 0 0 8px; font-size: 1.05rem; }
+
+.area-principal {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+}
+.coluna-lateral { display: flex; flex-direction: column; gap: 16px; }
+
+.area-inferior {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .area-principal, .area-inferior { grid-template-columns: 1fr; }
+}
+
+/* ===== Controles ===== */
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+}
+.grupo { display: flex; flex-direction: column; gap: 6px; }
+.botoes { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.rotulo {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--suave);
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borda);
+  background: white;
+  color: var(--texto);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+button:hover:not(:disabled) { background: #eef2ff; }
+button:active:not(:disabled) { transform: scale(0.97); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button.ativo {
+  background: var(--primaria);
+  color: white;
+  border-color: var(--primaria);
+}
+
+.dica { font-size: 0.82rem; color: var(--suave); margin: 0 0 12px; }
+
+.editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+/* ===== Grade do labirinto ===== */
+.grade {
+  display: grid;
+  gap: 3px;
+  justify-content: start;
+  overflow-x: auto;
+  padding: 4px;
+}
+
+.indice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--suave);
+}
+
+.celula {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: var(--livre);
+  border: 1px solid var(--borda);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.25s;
+}
+
+/* Estados das casas durante a busca */
+.celula.parede    { background: var(--parede); border-color: var(--parede); }
+.celula.visitado  { background: var(--visitado); }
+.celula.fronteira { background: var(--fronteira); }
+.celula.novo      { background: var(--novo); animation: entrar 0.4s ease-out; }
+.celula.atual     { background: var(--atual); color: white; animation: pulsar 0.6s ease-in-out; }
+.celula.caminho   { background: var(--caminho); color: white; animation: aparecer 0.4s ease-out both; }
+
+/* Origem e destino mantêm a cor; o estado aparece como um anel */
+.celula.origem  { background: var(--origem); color: white; border-color: var(--origem); }
+.celula.destino { background: var(--destino); color: white; border-color: var(--destino); }
+.celula.origem.atual, .celula.destino.atual { box-shadow: 0 0 0 3px var(--atual); }
+.celula.origem.caminho, .celula.destino.caminho { box-shadow: 0 0 0 3px var(--caminho); }
+
+@keyframes pulsar {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+@keyframes entrar {
+  from { transform: scale(0.7); opacity: 0.4; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes aparecer {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+
+/* ===== Legenda ===== */
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 8px;
+  font-size: 0.8rem;
+  color: var(--suave);
+}
+.legenda span { display: flex; align-items: center; gap: 6px; }
+.legenda i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.cor-origem    { background: var(--origem); }
+.cor-destino   { background: var(--destino); }
+.cor-parede    { background: var(--parede); }
+.cor-fronteira { background: var(--fronteira); }
+.cor-novo      { background: var(--novo); }
+.cor-atual     { background: var(--atual); }
+.cor-visitado  { background: var(--visitado); }
+.cor-caminho   { background: var(--caminho); }
+
+/* ===== Fila / Pilha ===== */
+.estrutura {
+  display: flex;
+  gap: 6px;
+  min-height: 44px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.estrutura.fila  { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+.estrutura.pilha { flex-direction: column; align-items: flex-start; }
+
+.item {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--fronteira);
+  border: 1px solid #f59e0b;
+  font-family: Consolas, monospace;
+  font-size: 0.85rem;
+  animation: entrar 0.3s ease-out;
+}
+.item.proximo {
+  background: var(--atual);
+  color: white;
+  border-color: var(--atual);
+  font-weight: 700;
+}
+.vazio { color: var(--suave); font-style: italic; font-size: 0.85rem; }
+
+/* ===== Métricas ===== */
+.metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.metrica { background: var(--fundo); border-radius: 8px; padding: 8px 10px; }
+.metrica.larga { grid-column: span 2; }
+.metrica span {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--suave);
+  text-transform: uppercase;
+}
+.metrica strong { font-size: 1.1rem; }
+
+/* ===== Log ===== */
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.88rem;
+}
+.log li {
+  padding: 8px 10px;
+  border-left: 3px solid var(--borda);
+  background: var(--fundo);
+  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
+}
+.log li.log-atual { border-left-color: var(--primaria); background: #eef2ff; }
+.log li.sucesso   { border-left-color: var(--origem); }
+.log li.falha     { border-left-color: var(--destino); }
+.log li.ignorado  { opacity: 0.75; }
+
+/* ===== Tabela de comparação ===== */
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 8px; }
+th, td { padding: 8px; border-bottom: 1px solid var(--borda); text-align: left; }
+th { font-size: 0.8rem; color: var(--suave); }
+
+.explicacao {
+  margin-top: 12px;
+  background: #eef2ff;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.explicacao h3 { margin: 0 0 6px; font-size: 0.95rem; }
+.explicacao p { margin: 0 0 8px; }
+.explicacao p:last-child { margin-bottom: 0; }
