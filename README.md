@@ -1,6 +1,6 @@
 # Trabalho P2 — Estrutura de Dados
 
-## 🎥 Vídeo explicativo: [ASSISTIR AQUI] https://youtu.be/VyAuVUoL91w
+## 🎥 Vídeo explicativo: [https://youtu.be/VyAuVUoL91w] 
 
 | | |
 |---|---|
